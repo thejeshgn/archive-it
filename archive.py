@@ -79,7 +79,7 @@ if __name__ == '__main__':
             else:
                 print "Please select a service to archive."
             line = u[0]+','+archive_url+'\n'
-            #print line
+            print line
             out.write(line)
     print "Archived "+str(len(urls))+" number of URLs with "+str(service)        
 
