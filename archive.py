@@ -13,6 +13,7 @@ import requests
 from BeautifulSoup import BeautifulStoneSoup as Soup
 import re
 import time
+import json
 
 def parse_sitemap(url):
     resp = requests.get(url)
@@ -43,6 +44,17 @@ def parse_sitemap(url):
         last = u.find('lastmod').string
         out.append([loc, prio, change, last])
     return out
+
+def service_archiveorg(url):
+    r1 = requests.get("https://web.archive.org/save/"+str(url))    
+    r2 = requests.get("http://archive.org/wayback/available?url="+str(url))
+    data = json.loads(r2.text)
+    archived_snapshots = data["archived_snapshots"]
+    if len(archived_snapshots):
+        closet = archived_snapshots['closest']
+        return closet['url']
+    else:
+        return "not yet"
 
 
 
@@ -76,6 +88,10 @@ if __name__ == '__main__':
             time.sleep(.5) 
             if args.service == 'archiveis':
                 archive_url = service_archiveis(u[0])
+
+            if args.service == 'archiveorg':
+                archive_url = service_archiveorg(u[0])
+            
             else:
                 print "Please select a service to archive."
             line = u[0]+','+archive_url+'\n'

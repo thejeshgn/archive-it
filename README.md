@@ -5,7 +5,8 @@ Archive your website using the following services
 
 #Services
 
-1. archiveis  - http://archive.is - default
+1. archiveis  -  http://archive.is          - default
+2. archiveorg -  http://web.archive.org/    - default
 
 
 #Run
