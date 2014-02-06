@@ -1,23 +1,22 @@
 archive-it
 ==========
 
-Archive your blog using archive.org's wayback machine. 
+Archive your website using the following services 
 
+#Services
+
+1. archiveis  - http://archive.is - default
 
 
 #Run
 
 ```
 
-example
-$python archive.py -u http://thejeshgn.com/sitemap.xml -o output.txt
+$python archive.py -u http://thejeshgn.com/sitemap.xml -o output.txt -s archiveis
 
 ```
 
 
-#Services
-
-1. archiveis - http://archive.is
 
 
 
