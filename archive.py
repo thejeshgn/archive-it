@@ -15,11 +15,36 @@ import re
 import time
 import json
 
+def getListOfSubSiteMaps(url):
+    sitemaps = []
+    resp = requests.get(url)
+    # we didn't get a valid response, bail
+    if '200' != str(resp.status_code):
+        return False
+    
+    # BeautifulStoneSoup to parse the document
+    soup = Soup(resp.content)
+    
+    # find all the <url> tags in the document
+    urls = soup.findAll('url')
+    
+    if not urls:
+         sms = soup.findAll('sitemap')
+         if sms:
+            for sm in sms:
+                loc =sm.find('loc').string
+                sitemaps.append(loc)
+    else:
+        sitemaps.append(url)
+    print  str(sitemaps)
+    return sitemaps
+
+
+
 def parse_sitemap(url):
     resp = requests.get(url)
-    
     # we didn't get a valid response, bail
-    if 200 != resp.status_code:
+    if '200' != str(resp.status_code):
         return False
     
     # BeautifulStoneSoup to parse the document
@@ -61,7 +86,7 @@ def service_archiveorg(url):
 def service_archiveis(url):
     payload = {'url': url}
     #r = requests.post("http://httpbin.org/post", data=payload)
-    r       = requests.post("http://archive.is/submit/", data=payload)
+    r = requests.post("http://archive.today/submit/", data=payload)
     soup    = Soup(r.text)
     script  = soup.script
     urls    = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', str(script))
@@ -78,24 +103,30 @@ if __name__ == '__main__':
     options.add_argument('-s', '--service', action='store', dest='service', default='archiveis', help='What service do you like to use')
 
     args = options.parse_args()
-    urls = parse_sitemap(args.url)
-    if not urls:
-        print 'There was an error in reading sitemap!'
+    
+    sitemaps = getListOfSubSiteMaps(args.url)
+
+    for sitemap_url in sitemaps:
+        print "Starting for >"+str(sitemap_url)
+        urls = parse_sitemap(sitemap_url)
+        print urls
+        if not urls:
+            print 'There was an error in reading sitemap!'
 
 
-    with open(args.out, 'w') as out:
-        for u in urls:
-            time.sleep(.5) 
-            if args.service == 'archiveis':
-                archive_url = service_archiveis(u[0])
+        with open(args.out, 'w') as out:
+            for u in urls:
+                time.sleep(.5) 
+                if args.service == 'archiveis':
+                    archive_url = service_archiveis(u[0])
 
-            if args.service == 'archiveorg':
-                archive_url = service_archiveorg(u[0])
-            
-            else:
-                print "Please select a service to archive."
-            line = u[0]+','+archive_url+'\n'
-            print line
-            out.write(line)
+                if args.service == 'archiveorg':
+                    archive_url = service_archiveorg(u[0])
+                
+                else:
+                    print "Please select a service to archive."
+                line = u[0]+','+archive_url+'\n'
+                print line
+                out.write(line)
     print "Archived "+str(len(urls))+" number of URLs with "+str(service)        
 
