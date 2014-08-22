@@ -128,5 +128,5 @@ if __name__ == '__main__':
                 line = u[0]+','+archive_url+'\n'
                 print line
                 out.write(line)
-    print "Archived "+str(len(urls))+" number of URLs with "+str(service)        
+    print "Archived "+str(len(urls))+" number of URLs with "+str(args.service)        
 
