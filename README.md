@@ -18,13 +18,18 @@ Archive your website using the following services
 
 ###Run
 
+
 ```
+$python archive.py
+
+or
 
 $python archive.py -u http://thejeshgn.com/sitemap.xml -o output.txt -s archiveis
 
 or
 
 $python archive.py -u http://thejeshgn.com/sitemap.xml -o output.txt -s archiveorg
+
 
 
 ```
@@ -35,6 +40,10 @@ $python archive.py -u http://thejeshgn.com/sitemap.xml -o output.txt -s archiveo
 3. Try downloading your pages for offline use
 
  
+###Updates
+1. Added requirements.txt 
+2. GUI to prompt users for settings. Useful if the user is not comfortable using command line
+
 
 
 

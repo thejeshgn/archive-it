@@ -14,6 +14,7 @@ from BeautifulSoup import BeautifulStoneSoup as Soup
 import re
 import time
 import json
+from easygui import * 
 
 def getListOfSubSiteMaps(url):
     sitemaps = []
@@ -98,13 +99,36 @@ def service_archiveis(url):
 
 if __name__ == '__main__':
     options = ArgumentParser()
-    options.add_argument('-u', '--url', action='store', dest='url', help='The file contain one url per line')
+    options.add_argument('-u', '--url', action='store', dest='url', help='Provide the path of sitemap url')
     options.add_argument('-o', '--output', action='store', dest='out', default='out.txt', help='Where you would like to save the results')
     options.add_argument('-s', '--service', action='store', dest='service', default='archiveis', help='What service do you like to use')
-
-    args = options.parse_args()
+    options.add_argument('-c', '--cmd', action='store', dest='cmd', default=False, help='Do you want to run as cmd?')
     
-    sitemaps = getListOfSubSiteMaps(args.url)
+    title = "Archive IT"
+    url = None
+    out = 'out.txt'
+    service = None
+    bufsize = 0
+    args = options.parse_args()
+    if args.cmd == True:
+        url = args.url
+        out = args.out
+        service = args.service
+    else:
+        while 1:
+            msg = "Please enter the URL path for sitemap?"
+            url = enterbox(msg,title, "https://thejeshgn.com/sitemap.xml")
+            if url != None:
+                break
+
+        choices = ["archiveis","archiveorg"]
+        service = choicebox("What archive service do you like to use?",title, choices=choices)
+        out = filesavebox("Create a file to save the log ", title)
+        debug_message = "Running for the sitemap="+str(url)+"\n"+"On the service="+str(service)+"\n"+"Log file to see the out puts:"+str(out)
+        print debug_message
+        codebox("Settings", "Settings", debug_message) 
+
+    sitemaps = getListOfSubSiteMaps(url)
 
     for sitemap_url in sitemaps:
         print "Starting for >"+str(sitemap_url)
@@ -114,19 +138,17 @@ if __name__ == '__main__':
             print 'There was an error in reading sitemap!'
 
 
-        with open(args.out, 'w') as out:
+        with open(out, 'a', bufsize) as output:
             for u in urls:
                 time.sleep(.5) 
-                if args.service == 'archiveis':
+                if service == 'archiveis':
                     archive_url = service_archiveis(u[0])
-
-                if args.service == 'archiveorg':
+                elif service == 'archiveorg':
                     archive_url = service_archiveorg(u[0])
-                
                 else:
                     print "Please select a service to archive."
                 line = u[0]+','+archive_url+'\n'
                 print line
-                out.write(line)
-    print "Archived "+str(len(urls))+" number of URLs with "+str(args.service)        
+                output.write(line)
+    print "Archived "+str(len(urls))+" number of URLs with "+str(service)        
 
